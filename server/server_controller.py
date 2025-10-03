@@ -1,10 +1,13 @@
 from common_objects.responses import Response, DataResponse
 from server.server_executor import Server
+from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
 from server.server_requests.country_request import CountryRequest
 
+DEFAULT_NUMBER_OF_COUNTRIES = 5
 
 class ServerController:
     __server = Server()
+
     def get_country(self, request: CountryRequest) -> Response[str]:
         ip_address = request.ip_address
         if self.__valid_ip_address(ip_address):
@@ -27,3 +30,18 @@ class ServerController:
             if i < 0 or i > 255:
                 return False
         return True
+
+    def get_all_ips(self, request: AllIPsInCountryRequest) -> Response[list[str]]:
+        country = request.country
+        if self.__valid_country(country):
+            ip_addresses = self.__server.get_all_ips_of_country(country)
+            return DataResponse(ip_addresses)
+        else:
+            return Response(error_msg="Invalid country or country has 0 requests.", status_code=400)
+
+    def __valid_country(self, country: str) -> bool:
+        return country in self.__server.get_all_available_countries()
+
+    def get_top_countries(self) -> Response[list[str]]:
+        top_countries = self.__server.get_top_countries(DEFAULT_NUMBER_OF_COUNTRIES)
+        return DataResponse(top_countries)
