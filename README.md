@@ -6,14 +6,14 @@ This repository shows different attacks and their defenses on a web server using
 In this repository we create a web server, attack it and use a proxy that detects the attacks on the server and defenses against them.
 The task is composed of 3 main parts:
 
-# 1. Web Server
+### 1. Web Server
 Small http server with an API that supports the following endpoints:
 - Geolocation – given an IP returns its country
 -	Given a country returns all the IPs from that location that were queried for Geolocation. Support optionable datetime filters (by default returns all)
 - Top 5 countries by number of Geolocation Requests
 - The server log all of its activities.
 
-# 2. Attack Service
+### 2. Attack Service
 Simple and understandable CLI that attacks the web server from part 1.
 The CLI support:
 -	Syn-flood
@@ -21,7 +21,7 @@ The CLI support:
 -	An additional attack of your choice (should add)
 The attacking process is capable of sending 500 requests per second.
 
-# 3. Proxy Defense
+### 3. Proxy Defense
 Reverse proxy between the attacking service and the webserver.
 -	The proxy detects and defends against each of the attacks from part 2
 -	The proxy log all of its activities
