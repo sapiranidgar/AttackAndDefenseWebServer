@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from server_controller import server_router  # import your routes
+from server_routes import server_router  # import your routes
 
 
 def create_app() -> FastAPI:
