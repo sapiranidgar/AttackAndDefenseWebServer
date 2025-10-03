@@ -1,10 +1,8 @@
-from fastapi import FastAPI
-
+from fastapi import APIRouter
 from server.server_requests.country_request import CountryRequest
 
-app = FastAPI()
+server_router = APIRouter()
 
-
-@app.post("/get_country")
+@server_router.post("/get_country")
 async def get_ip_country(request: CountryRequest):
     return {"message": request.ip_address}
