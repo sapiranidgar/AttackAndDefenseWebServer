@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+
 from common_objects.responses import Response, DataResponse
 from server.server_executor import Server
 from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
@@ -34,14 +36,32 @@ class ServerController:
 
     def get_all_ips(self, request: AllIPsInCountryRequest) -> Response[list[str]]:
         country = request.country
-        if self.__valid_country(country):
-            ip_addresses = self.__server.get_all_ips_of_country(country)
-            return DataResponse(ip_addresses)
-        else:
+        start_time = request.start_time
+        end_time = request.end_time
+
+        if not self.__valid_country(country):
             return Response(error_msg="Invalid country or country has 0 requests.", status_code=400)
+
+        if not self.__valid_date_filters(start_time, end_time):
+            return Response(error_msg="Invalid filtering dates.", status_code=400)
+
+        ip_addresses = self.__server.get_all_ips_of_country(country, start_time, end_time)
+        return DataResponse(ip_addresses)
+
 
     def __valid_country(self, country: str) -> bool:
         return country in self.__server.get_all_available_countries()
+
+    def __valid_date_filters(self, start_time: Optional[datetime], end_time: Optional[datetime]) -> bool:
+        if start_time is None and end_time is None:
+            return True
+        if start_time is not None and end_time is not None:
+            if start_time > end_time:
+                return False
+            if start_time > datetime.now():
+                return False
+        return True
+
 
     def get_top_countries(self) -> Response[list[str]]:
         top_countries = self.__server.get_top_countries(DEFAULT_NUMBER_OF_COUNTRIES)

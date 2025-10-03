@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from urllib.request import urlopen
 import json
 
@@ -35,8 +36,16 @@ class Server:
         self.__geo_location_requests = pd.concat([self.__geo_location_requests, current_ip_df], ignore_index=True)
         return ip_country
 
-    def get_all_ips_of_country(self, country: str) -> list[str]:
+    def get_all_ips_of_country(self, country: str, start_time: Optional[datetime], end_time: Optional[datetime]) \
+            -> list[str]:
         country_df = self.__geo_location_requests[self.__geo_location_requests[COUNTRY_COLUMN] == country]
+
+        if start_time is not None:
+            country_df = country_df[country_df[DATE_COLUMN] >= start_time]
+
+        if end_time is not None:
+            country_df = country_df[country_df[DATE_COLUMN] <= end_time]
+
         return list(country_df[IP_ADDRESS_COLUMN])
 
     def get_top_countries(self, number_of_countries: int) -> list[str]:
