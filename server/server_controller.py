@@ -1,3 +1,4 @@
+from datetime import datetime
 from common_objects.responses import Response, DataResponse
 from server.server_executor import Server
 from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
@@ -11,7 +12,7 @@ class ServerController:
     def get_country(self, request: CountryRequest) -> Response[str]:
         ip_address = request.ip_address
         if self.__valid_ip_address(ip_address):
-            country = self.__server.get_geolocation_by_address(ip_address)
+            country = self.__server.get_geolocation_by_address(ip_address, datetime.now())
             if country is None or country == "":
                 return Response(error_msg="Failed to retrieve the ip's country", status_code=500)
             return DataResponse(country)

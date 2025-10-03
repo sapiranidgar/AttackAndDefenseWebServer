@@ -1,18 +1,25 @@
-import heapq
+from datetime import datetime
 from urllib.request import urlopen
 import json
+
+import pandas as pd
 
 GEOLOCATION_URL_PREFIX = "https://ipinfo.io/"
 GEOLOCATION_URL_SUFFIX = "/json"
 
 COUNTRY_KEY = "country"
 
+COUNTRY_COLUMN = "country"
+IP_ADDRESS_COLUMN = "ip"
+DATE_COLUMN = "date"
+GEO_LOCATION_REQUESTS_COLUMNS = [COUNTRY_COLUMN, IP_ADDRESS_COLUMN, DATE_COLUMN]
+
 
 class Server:
     def __init__(self):
-        self.__all_geo_location_requests: dict[str, list[str]] = {}
+        self.__geo_location_requests = pd.DataFrame(columns=GEO_LOCATION_REQUESTS_COLUMNS)
 
-    def get_geolocation_by_address(self, ip_address: str) -> str:
+    def get_geolocation_by_address(self, ip_address: str, start_date: datetime) -> str:
         url = GEOLOCATION_URL_PREFIX + ip_address + GEOLOCATION_URL_SUFFIX
 
         try:
@@ -20,22 +27,25 @@ class Server:
         except:
             return ""
 
-        if ip_country not in self.__all_geo_location_requests:
-            self.__all_geo_location_requests[ip_country] = [ip_address]
-        else:
-            self.__all_geo_location_requests[ip_country].append(ip_address)
+        current_ip_df = pd.DataFrame({
+            COUNTRY_COLUMN: [ip_country],
+            IP_ADDRESS_COLUMN: [ip_address],
+            DATE_COLUMN: [start_date]
+        })
+        self.__geo_location_requests = pd.concat([self.__geo_location_requests, current_ip_df], ignore_index=True)
         return ip_country
 
     def get_all_ips_of_country(self, country: str) -> list[str]:
-        return self.__all_geo_location_requests.get(country, [])
+        country_df = self.__geo_location_requests[self.__geo_location_requests[COUNTRY_COLUMN] == country]
+        return list(country_df[IP_ADDRESS_COLUMN])
 
     def get_top_countries(self, number_of_countries: int) -> list[str]:
-        if self.__all_geo_location_requests == {}:
+        if self.__geo_location_requests.empty:
             return []
-        len_per_country = {country: len(addresses) for country, addresses in self.__all_geo_location_requests.items()}
-        top_countries = heapq.nlargest(number_of_countries, len_per_country.items(), key=lambda i: i[1])
-        return [country_addresses[0] for country_addresses in top_countries]
 
+        len_per_country: pd.Series = self.__geo_location_requests.groupby(COUNTRY_COLUMN)[IP_ADDRESS_COLUMN].nunique()
+        len_per_country_sorted = len_per_country.sort_values(ascending=False)
+        return list(len_per_country_sorted.index)[:number_of_countries]
 
     def get_all_available_countries(self) -> list[str]:
-        return list(self.__all_geo_location_requests.keys())
+        return self.__geo_location_requests[COUNTRY_COLUMN].unique().tolist()
