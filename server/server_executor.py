@@ -1,9 +1,12 @@
+import logging
 from datetime import datetime
 from typing import Optional
 from urllib.request import urlopen
 import json
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 GEOLOCATION_URL_PREFIX = "https://ipinfo.io/"
 GEOLOCATION_URL_SUFFIX = "/json"
@@ -26,6 +29,7 @@ class Server:
         try:
             ip_country = json.load(urlopen(url))[COUNTRY_KEY]
         except:
+            logger.error("Could not load country for ip address: " + ip_address)
             return ""
 
         current_ip_df = pd.DataFrame({
