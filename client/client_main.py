@@ -1,6 +1,7 @@
 from client.client_executor import Client
 from web_attacks.attack_type import AttackType
 
+DEFAULT_TARGET_PORT = 8000
 
 def print_options_to_client():
     print("Hello to GEO-Location Client!")
@@ -12,21 +13,24 @@ def print_options_to_client():
 
 
 def print_attack_choices_to_client():
-    print("Welcome to the Attacks menu, choose one of the following options:")
+    print("choose one of the following attacks:")
     print("1. Syn-Flood attack.")
     print("2. Url-Bruteforce attack")
     print("3. Other attack")
 
 
 def handle_attack(client: Client):
+    print("Welcome to the Attacks menu!")
+    target_address = str(input("Enter your target (IP or URL): "))
+    target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}: "))
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
     if client_choice == AttackType.SYN_FLOOD:
-        client.perform_syn_flood_attack()
+        client.perform_syn_flood_attack(target_address, target_port)
     elif client_choice == AttackType.URL_BRUTE_FORCE:
-        client.perform_url_brute_force_attack()
+        client.perform_url_brute_force_attack(target_address, target_port)
     elif client_choice == AttackType.THIRD_ATTACK:
-        client.perform_third_attack()
+        client.perform_third_attack(target_address, target_port)
     else:
         print("Invalid attack choice. Only 1-3 are allowed.")
 
