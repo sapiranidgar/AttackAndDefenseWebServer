@@ -15,7 +15,8 @@ Small http server with an API that supports the following endpoints:
 
 To run the server, run the command:
 ```python
-python server/server_main.py```
+python server/server_main.py
+```
 
 ### 2. Attack Service
 Simple and understandable CLI that attacks the web server from part 1.
