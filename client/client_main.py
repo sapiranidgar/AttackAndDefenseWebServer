@@ -26,7 +26,9 @@ def handle_attack(client: Client):
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
     if client_choice == AttackType.SYN_FLOOD:
-        client.perform_syn_flood_attack(target_address, target_port)
+        number_of_packets = int(input("Enter number of packets to send to target: "))
+        print("~~~ Starting SYN-FLOOD Attack ~~~")
+        client.perform_syn_flood_attack(target_address, target_port, number_of_packets)
     elif client_choice == AttackType.URL_BRUTE_FORCE:
         client.perform_url_brute_force_attack(target_address, target_port)
     elif client_choice == AttackType.THIRD_ATTACK:
