@@ -21,8 +21,7 @@ class ServerController:
         try:
             ip_address = request.ip_address
             if self.__valid_ip_address(ip_address):
-                start_date = utc.localize(datetime.now())
-                country = self.__server.get_geolocation_by_address(ip_address, start_date)
+                country = self.__server.get_geolocation_by_address(ip_address, datetime.now())
                 if country is None or country == "":
                     logger.warning("Could not find the country for the given IP address in the geolocation request.")
                     return Response(error_msg="Failed to retrieve the ip's country", status_code=500)
