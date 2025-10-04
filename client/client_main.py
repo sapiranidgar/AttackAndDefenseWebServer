@@ -22,7 +22,7 @@ def print_attack_choices_to_client():
 def handle_attack(client: Client):
     print("Welcome to the Attacks menu!")
     target_address = str(input("Enter your target (IP or URL): "))
-    target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}: "))
+    target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}): "))
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
     if client_choice == AttackType.SYN_FLOOD:

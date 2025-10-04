@@ -61,6 +61,7 @@ class Client:
             try:
                 self.__send_syn_packet(target_address, target_port)
                 successful_requests += 1
+                print(f"Done sending {packet} packets.")
             except Exception as e:
                 print(f"An error occurred: {e}. Sent {successful_requests} packets. \nGoodbye.")
                 break
