@@ -1,5 +1,5 @@
-from pydantic import BaseModel
+from server.server_requests.server_request import ServerRequest
 
 
-class CountryRequest(BaseModel):
+class CountryRequest(ServerRequest):
     ip_address: str
