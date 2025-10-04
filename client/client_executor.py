@@ -9,6 +9,7 @@ GET_COUNTRY_OF_ADDRESS_URL = "/get_country"
 GET_ALL_IPS_URL = "/get_all_ip_in_country"
 GET_TOP_COUNTRIES_URL = "/get_top_countries"
 
+
 class Client:
     def __send_post_request(self, url: str, request: ServerRequest) -> str:
         data = request.model_dump_json()
@@ -24,16 +25,14 @@ class Client:
         url = SERVER_URL + GET_COUNTRY_OF_ADDRESS_URL
         return self.__send_post_request(url, request)
 
-    def send_get_all_addresses_in_country_request(self, country: str) -> list[str]:
+    def send_get_all_addresses_in_country_request(self, country: str) -> str:
         request = AllIPsInCountryRequest(country=country)
         url = SERVER_URL + GET_ALL_IPS_URL
-        res = self.__send_post_request(url, request)
-        return res.split(",")
+        return self.__send_post_request(url, request)
 
-    def send_get_top_countries_request(self) -> list[str]:
+    def send_get_top_countries_request(self) -> str:
         url = SERVER_URL + GET_TOP_COUNTRIES_URL
-        res = self.__send_get_request(url)
-        return res.split(",")
+        return self.__send_get_request(url)
 
     def perform_syn_flood_attack(self):
         pass
