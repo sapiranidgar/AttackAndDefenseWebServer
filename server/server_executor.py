@@ -1,9 +1,10 @@
 import logging
 import json
-import pandas as pd
 from datetime import datetime
 from typing import Optional
 from urllib.request import urlopen
+
+from server_database.server_db import ServerDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -12,15 +13,10 @@ GEOLOCATION_URL_SUFFIX = "/json"
 
 COUNTRY_KEY = "country"
 
-COUNTRY_COLUMN = "country"
-IP_ADDRESS_COLUMN = "ip"
-DATE_COLUMN = "date"
-GEO_LOCATION_REQUESTS_COLUMNS = [COUNTRY_COLUMN, IP_ADDRESS_COLUMN, DATE_COLUMN]
-
 
 class Server:
     def __init__(self):
-        self.__geo_location_requests = pd.DataFrame(columns=GEO_LOCATION_REQUESTS_COLUMNS)
+        self.__server_db = ServerDatabase()
 
     def get_geolocation_by_address(self, ip_address: str, start_date: datetime) -> str:
         url = GEOLOCATION_URL_PREFIX + ip_address + GEOLOCATION_URL_SUFFIX
@@ -31,33 +27,17 @@ class Server:
             logger.error("Could not load country for ip address: " + ip_address)
             return ""
 
-        current_ip_df = pd.DataFrame({
-            COUNTRY_COLUMN: [ip_country],
-            IP_ADDRESS_COLUMN: [ip_address],
-            DATE_COLUMN: [start_date]
-        })
-        self.__geo_location_requests = pd.concat([self.__geo_location_requests, current_ip_df], ignore_index=True)
+        self.__server_db.insert_record(ip_country, ip_address, start_date)
         return ip_country
 
     def get_all_ips_of_country(self, country: str, start_time: Optional[datetime], end_time: Optional[datetime]) \
             -> list[str]:
-        country_df = self.__geo_location_requests[self.__geo_location_requests[COUNTRY_COLUMN] == country]
-        country_df[DATE_COLUMN] = pd.to_datetime(country_df[DATE_COLUMN], utc=True)
-        if start_time is not None:
-            country_df = country_df[country_df[DATE_COLUMN] >= start_time]
-
-        if end_time is not None:
-            country_df = country_df[country_df[DATE_COLUMN] <= end_time]
-
-        return list(country_df[IP_ADDRESS_COLUMN])
+        country_addresses = self.__server_db.get_records_by_country(country, start_time, end_time)
+        return country_addresses
 
     def get_top_countries(self, number_of_countries: int) -> list[str]:
-        if self.__geo_location_requests.empty:
-            return []
-
-        len_per_country: pd.Series = self.__geo_location_requests.groupby(COUNTRY_COLUMN)[IP_ADDRESS_COLUMN].nunique()
-        len_per_country_sorted = len_per_country.sort_values(ascending=False)
-        return list(len_per_country_sorted.index)[:number_of_countries]
+        top_countries = self.__server_db.get_countries_with_most_ips(number_of_countries)
+        return top_countries
 
     def get_all_available_countries(self) -> list[str]:
-        return self.__geo_location_requests[COUNTRY_COLUMN].unique().tolist()
+        return self.__server_db.get_all_countries()
