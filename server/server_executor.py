@@ -1,10 +1,9 @@
 import logging
+import json
+import pandas as pd
 from datetime import datetime
 from typing import Optional
 from urllib.request import urlopen
-import json
-
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class Server:
     def get_all_ips_of_country(self, country: str, start_time: Optional[datetime], end_time: Optional[datetime]) \
             -> list[str]:
         country_df = self.__geo_location_requests[self.__geo_location_requests[COUNTRY_COLUMN] == country]
-
+        country_df[DATE_COLUMN] = pd.to_datetime(country_df[DATE_COLUMN], utc=True)
         if start_time is not None:
             country_df = country_df[country_df[DATE_COLUMN] >= start_time]
 
