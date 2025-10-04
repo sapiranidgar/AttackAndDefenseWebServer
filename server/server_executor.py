@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from urllib.request import urlopen
 
-from server_database.server_db import ServerDatabase
+from server.server_db import ServerDatabase
 
 logger = logging.getLogger(__name__)
 
