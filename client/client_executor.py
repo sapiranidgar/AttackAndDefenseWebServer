@@ -18,11 +18,11 @@ class Client:
     def __send_post_request(self, url: str, request: ServerRequest) -> str:
         data = request.model_dump_json()
         response = requests.post(url, data=data)
-        return response.content
+        return response.content.decode("utf-8")
 
     def __send_get_request(self, url: str) -> str:
         response = requests.get(url)
-        return response.content
+        return response.content.decode("utf-8")
 
     def send_country_request(self, ip_address: str) -> str:
         request = CountryRequest(ip_address=ip_address)
