@@ -13,17 +13,14 @@ Small http server with an API that supports the following endpoints:
 - Top 5 countries by number of Geolocation Requests
 - The server log all of its activities.
 
-To run the server, run the command:
-```python
-python server/server_main.py
-```
 
 ### 2. Attack Service
 Simple and understandable CLI that attacks the web server from part 1.
 The CLI support:
 -	Syn-flood
 -	URL brute-force
--	An additional attack of your choice (should add)
+-	An additional attack of your choice (should add).
+
 The attacking process is capable of sending 500 requests per second.
 
 ### 3. Proxy Defense
@@ -33,11 +30,11 @@ Reverse proxy between the attacking service and the webserver.
 
 ## How to Execute the Task
 
-1. Run the web_server.py file first to start the web server:
+1. To run the server, run the command:
 ```python
-python web_server.py
+python server/server_main.py
 ```
-This will make the web server available at http://localhost:8080.
+This will make the web server available at http://localhost:8000.
 
 2. Run the proxy.py file to start the reverse proxy:
 ```python
@@ -45,13 +42,18 @@ python proxy.py
 ```
 The proxy will forward requests to the web server and is available at http://localhost:8081.
 
-3. Run the attack_service.py file to simulate attacks:
-```python
-python attack_service.py
-```
-You’ll be prompted to select an attack type and target.
-Use the proxy address (http://localhost:8081) as the target to ensure the attacks are routed through the proxy.
+3. Run the client_main.py file to send requests to the server.
+The available options are:
+- GEO-Location request.
+- Get all Ips in a given country.
+- Get top 5 countries.
+- Attack the server.
 
+In each choice, you will be prompted with relevant inputs necessary to complete the task.
+If you choose "Attack the Server" option - choose one of the availale attacks (1-3).
+You'll need to enter target IP address and port in order to perform the attack.
+
+To attack the server directly, enter the address 127.0.0.1 and port 8000 (while executing the server locally).
 
 ## Disclamer 
 This repository is for educational purpose only. Developers and contributers of this project will not be responsible for any damage caused directly or indirectly through this project.
