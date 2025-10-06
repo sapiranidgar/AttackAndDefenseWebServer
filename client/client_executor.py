@@ -5,6 +5,7 @@ from server.server_requests.all_ips_in_country_request import AllIPsInCountryReq
 from server.server_requests.country_request import CountryRequest
 from server.server_requests.server_request import ServerRequest
 from web_attacks.syn_flood_attack import perform_syn_flood_direct_attack, perform_syn_flood_spoofed_attack
+from web_attacks.url_brute_force_attack import perform_url_brute_force_attack
 
 SERVER_URL = "http://127.0.0.1:8000"
 GET_COUNTRY_OF_ADDRESS_URL = "/get_country"
@@ -43,8 +44,8 @@ class Client:
     def perform_syn_flood_spoofed_attack(self, target_address: str, target_port: int, number_of_packets: int):
         perform_syn_flood_spoofed_attack(target_address, target_port, number_of_packets)
 
-    def perform_url_brute_force_attack(self, target_address: str, target_port: int):
-        pass
+    def perform_url_brute_force_attack(self, target_address: str, number_of_packets: int):
+        perform_url_brute_force_attack(target_address, number_of_packets)
 
     def perform_third_attack(self, target_address: str, target_port: int):
         pass

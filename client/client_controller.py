@@ -36,7 +36,7 @@ class ClientController:
 
     def perform_syn_flood_attack(self, target_address: str, target_port: int, attack_type: SynFloodAttackType,
                                  number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
-        if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:
+        if not self.__valid_number_of_packets(number_of_packets):
             return Response(error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
         if attack_type == SynFloodAttackType.DIRECT:
             try:
@@ -55,8 +55,21 @@ class ClientController:
         else:
             return Response(error_msg="You chose unsupported syn-flood attack. Try again.", status_code=500)
 
-    def perform_url_brute_force_attack(self, target_address: str, target_port: int):
-        pass
+    def perform_url_brute_force_attack(self, target_address: str, number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
+        if not self.__valid_number_of_packets(number_of_packets):
+            return Response(
+                error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
+
+        try:
+            self.__client.perform_url_brute_force_attack(target_address, number_of_packets)
+            return DataResponse(True)
+        except Exception as e:
+            return Response(error_msg=f"Could not perform url brute force attack. The error is: {e}", status_code=500)
 
     def perform_third_attack(self, target_address: str, target_port: int):
         pass
+
+    def __valid_number_of_packets(self, number_of_packets: int) -> bool:
+        if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:
+            return False
+        return True

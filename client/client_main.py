@@ -24,23 +24,50 @@ def print_syn_flood_attack_menu():
     print("1. Syn-Flood Direct attack.")
     print("2. Syn-Flood Spoofed attack")
 
+def handle_syn_flood_attack(target_address: str, target_port: int, number_of_packets: int):
+    print_syn_flood_attack_menu()
+    syn_flood_attack_type = SynFloodAttackType(int(input()))
+    print("~~~ Starting SYN-FLOOD Attack ~~~")
+    res = client_controller.perform_syn_flood_attack(target_address, target_port, syn_flood_attack_type,
+                                                     number_of_packets)
+    if res.is_successful() and res.get_data():
+        print("~~~ Finished SYN-FLOOD Attack ~~~")
+    else:
+        print(res.get_error_msg())
+
+def handle_url_brute_force_attack(target_address: str, number_of_packets: int):
+    print("~~~ Starting URL Brute Force Attack ~~~")
+    res = client_controller.perform_url_brute_force_attack(target_address, number_of_packets)
+    if res.is_successful() and res.get_data():
+        print("~~~ Finished URL Brute Force Attack ~~~")
+    else:
+        print(res.get_error_msg())
+
+def handle_third_attack(target_address: str, number_of_packets: int):
+    # todo: change
+    print("~~~ Starting URL Brute Force Attack ~~~")
+    res = client_controller.perform_third_attack(target_address, number_of_packets)
+    if res.is_successful() and res.get_data():
+        print("~~~ Finished SYN-FLOOD Attack ~~~")
+    else:
+        print(res.get_error_msg())
 
 def handle_attack():
     print("Welcome to the Attacks menu!")
     target_address = str(input("Enter your target (IP or URL): "))
     target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}): "))
+    number_of_packets = int(input("Enter number of packets to send to target: "))
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
     if client_choice == AttackType.SYN_FLOOD:
-        number_of_packets = int(input("Enter number of packets to send to target: "))
-        print_syn_flood_attack_menu()
-        syn_flood_attack_type = SynFloodAttackType(int(input()))
-        print("~~~ Starting SYN-FLOOD Attack ~~~")
-        client_controller.perform_syn_flood_attack(target_address, target_port, syn_flood_attack_type, number_of_packets)
+        handle_syn_flood_attack(target_address, target_port, number_of_packets)
+
     elif client_choice == AttackType.URL_BRUTE_FORCE:
-        client_controller.perform_url_brute_force_attack(target_address, target_port)
+        handle_url_brute_force_attack(target_address, number_of_packets)
+
     elif client_choice == AttackType.THIRD_ATTACK:
-        client_controller.perform_third_attack(target_address, target_port)
+        handle_third_attack(target_address, target_port)
+
     else:
         print("Invalid attack choice. Only 1-3 are allowed.")
 
