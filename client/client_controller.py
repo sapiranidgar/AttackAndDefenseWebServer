@@ -55,13 +55,13 @@ class ClientController:
         else:
             return Response(error_msg="You chose unsupported syn-flood attack. Try again.", status_code=500)
 
-    def perform_url_brute_force_attack(self, target_address: str, number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
+    def perform_url_brute_force_attack(self, target_address: str, target_port: int, number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
         if not self.__valid_number_of_packets(number_of_packets):
             return Response(
                 error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
 
         try:
-            target_url = "http://" + target_address
+            target_url = f"http://{target_address}:{target_port}"
             self.__client.perform_url_brute_force_attack(target_url, number_of_packets)
             return DataResponse(True)
         except Exception as e:

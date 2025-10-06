@@ -35,9 +35,9 @@ def handle_syn_flood_attack(target_address: str, target_port: int, number_of_pac
     else:
         print(res.get_error_msg())
 
-def handle_url_brute_force_attack(target_address: str, number_of_packets: int):
+def handle_url_brute_force_attack(target_address: str, target_port: int, number_of_packets: int):
     print("~~~ Starting URL Brute Force Attack ~~~")
-    res = client_controller.perform_url_brute_force_attack(target_address, number_of_packets)
+    res = client_controller.perform_url_brute_force_attack(target_address, target_port, number_of_packets)
     if res.is_successful() and res.get_data():
         print("~~~ Finished URL Brute Force Attack ~~~")
     else:
@@ -63,7 +63,7 @@ def handle_attack():
         handle_syn_flood_attack(target_address, target_port, number_of_packets)
 
     elif client_choice == AttackType.URL_BRUTE_FORCE:
-        handle_url_brute_force_attack(target_address, number_of_packets)
+        handle_url_brute_force_attack(target_address, target_port, number_of_packets)
 
     elif client_choice == AttackType.THIRD_ATTACK:
         handle_third_attack(target_address, target_port)

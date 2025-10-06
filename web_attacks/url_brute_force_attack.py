@@ -4,7 +4,8 @@ import requests
 
 SERVER_RANDOM_PATH_LENGTH = 5
 DEFAULT_TIMEOUT = 3
-DEFAULT_ATTACK_URLS = ["data", "key", "robots.txt", "admin", "config.php", "etc/resolv.conf", "etc/hosts", "httpd.conf"]
+DEFAULT_ATTACK_URLS = ["data", "key", "robots.txt", "admin", "config.php", "etc/resolv.conf",
+                       "etc/hosts", "httpd.conf", "get_top_countries"]
 
 def generate_random_url() -> str:
     return ''.join(random.choices(string.ascii_letters, k=SERVER_RANDOM_PATH_LENGTH))
@@ -21,4 +22,4 @@ def perform_url_brute_force_attack(target_address: str, number_of_packets: int):
             successful_requests += 1
             print(f"Done sending {idx + 1} requests with random urls. Current url: {random_url}.")
         except Exception as e:
-            print(f"An error occurred for packet {idx + 1}: {e}. Sent {successful_requests} packets. \nGoodbye.")
+            print(f"An error occurred for packet {idx + 1}: {e}. Sent {successful_requests} packets. \nContinuing for the next request.")
