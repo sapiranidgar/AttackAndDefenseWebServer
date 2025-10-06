@@ -54,7 +54,7 @@ def handle_third_attack(target_address: str, number_of_packets: int):
 
 def handle_attack():
     print("Welcome to the Attacks menu!")
-    target_address = str(input("Enter your target (IP or URL): "))
+    target_address = str(input("Enter your target (IP): "))
     target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}): "))
     number_of_packets = int(input("Enter number of packets to send to target: "))
     print_attack_choices_to_client()

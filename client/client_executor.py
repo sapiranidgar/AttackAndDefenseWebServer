@@ -44,8 +44,8 @@ class Client:
     def perform_syn_flood_spoofed_attack(self, target_address: str, target_port: int, number_of_packets: int):
         perform_syn_flood_spoofed_attack(target_address, target_port, number_of_packets)
 
-    def perform_url_brute_force_attack(self, target_address: str, number_of_packets: int):
-        perform_url_brute_force_attack(target_address, number_of_packets)
+    def perform_url_brute_force_attack(self, target_url: str, number_of_packets: int):
+        perform_url_brute_force_attack(target_url, number_of_packets)
 
     def perform_third_attack(self, target_address: str, target_port: int):
         pass

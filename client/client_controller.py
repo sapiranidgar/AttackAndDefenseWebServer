@@ -61,7 +61,8 @@ class ClientController:
                 error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
 
         try:
-            self.__client.perform_url_brute_force_attack(target_address, number_of_packets)
+            target_url = "http://" + target_address
+            self.__client.perform_url_brute_force_attack(target_url, number_of_packets)
             return DataResponse(True)
         except Exception as e:
             return Response(error_msg=f"Could not perform url brute force attack. The error is: {e}", status_code=500)
