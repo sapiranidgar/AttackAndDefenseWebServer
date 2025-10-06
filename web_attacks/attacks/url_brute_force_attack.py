@@ -18,7 +18,6 @@ class UrlBruteForceAttack(Attack):
         for idx, random_url_suffix in enumerate(random_urls + DEFAULT_ATTACK_URLS):
             try:
                 random_url = f"{attack_params.target_ip}/{random_url_suffix}"
-                print(random_url)
                 requests.get(random_url, timeout=DEFAULT_TIMEOUT)
                 successful_requests += 1
                 print(f"Done sending {idx + 1} requests with random urls. Current url: {random_url}.")
