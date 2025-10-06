@@ -1,4 +1,6 @@
 import logging
+import threading
+
 import pytz
 from datetime import datetime
 from typing import Optional
@@ -16,6 +18,20 @@ DEFAULT_NUMBER_OF_COUNTRIES = 5
 
 class ServerController:
     __server = Server()
+    __instance = None
+    __lock = threading.Lock()
+
+    def __init__(self):
+        raise RuntimeError("This is a Singleton. Invoke get_instance() instead.")
+
+    @classmethod
+    def get_instance(cls):
+        if cls.__instance is None:
+            with cls.__lock:
+                if cls.__instance is None:
+                    cls.__instance = super().__new__(cls)
+
+        return cls.__instance
 
     def get_country(self, request: CountryRequest) -> Response[str]:
         try:

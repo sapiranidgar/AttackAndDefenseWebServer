@@ -1,7 +1,8 @@
-from client.client_executor import Client
-from web_attacks.attack_type import AttackType
+from client.client_controller import ClientController
+from web_attacks.attack_type import AttackType, SynFloodAttackType
 
 DEFAULT_TARGET_PORT = 8000
+client_controller = ClientController()
 
 def print_options_to_client():
     print("Hello to GEO-Location Client!")
@@ -18,8 +19,13 @@ def print_attack_choices_to_client():
     print("2. Url-Bruteforce attack")
     print("3. Other attack")
 
+def print_syn_flood_attack_menu():
+    print("choose one of the following attacks:")
+    print("1. Syn-Flood Direct attack.")
+    print("2. Syn-Flood Spoofed attack")
 
-def handle_attack(client: Client):
+
+def handle_attack():
     print("Welcome to the Attacks menu!")
     target_address = str(input("Enter your target (IP or URL): "))
     target_port = int(input(f"Enter your target port (should be {DEFAULT_TARGET_PORT}): "))
@@ -27,47 +33,57 @@ def handle_attack(client: Client):
     client_choice = AttackType(int(input()))
     if client_choice == AttackType.SYN_FLOOD:
         number_of_packets = int(input("Enter number of packets to send to target: "))
+        print_syn_flood_attack_menu()
+        syn_flood_attack_type = SynFloodAttackType(int(input()))
         print("~~~ Starting SYN-FLOOD Attack ~~~")
-        client.perform_syn_flood_attack(target_address, target_port, number_of_packets)
+        client_controller.perform_syn_flood_attack(target_address, target_port, syn_flood_attack_type, number_of_packets)
     elif client_choice == AttackType.URL_BRUTE_FORCE:
-        client.perform_url_brute_force_attack(target_address, target_port)
+        client_controller.perform_url_brute_force_attack(target_address, target_port)
     elif client_choice == AttackType.THIRD_ATTACK:
-        client.perform_third_attack(target_address, target_port)
+        client_controller.perform_third_attack(target_address, target_port)
     else:
         print("Invalid attack choice. Only 1-3 are allowed.")
 
 
-def handle_country_request(client: Client):
+def handle_country_request():
     ip_address = input("Enter IP address to check it's country: ")
-    server_result = client.send_country_request(ip_address)
-    print(server_result)
+    client_res = client_controller.send_country_request(ip_address)
+    if client_res.is_successful():
+        print(client_res.get_data())
+    else:
+        print(client_res.get_error_msg())
 
 
-def handle_all_ips_request(client: Client):
+def handle_all_ips_request():
     country = input("Enter country code to receive its addresses: ")
     # todo: add date filtering
-    server_result = client.send_get_all_addresses_in_country_request(country)
-    print(server_result)
+    client_res = client_controller.send_get_all_addresses_in_country_request(country)
+    if client_res.is_successful():
+        print(client_res.get_data())
+    else:
+        print(client_res.get_error_msg())
 
 
-def handle_top_countries_request(client: Client):
+def handle_top_countries_request():
     print("Retrieving top countries from the server...")
-    server_result = client.send_get_top_countries_request()
-    print(server_result)
+    client_res = client_controller.send_get_top_countries_request()
+    if client_res.is_successful():
+        print(client_res.get_data())
+    else:
+        print(client_res.get_error_msg())
 
 
 def main():
-    client_executor = Client()
     print_options_to_client()
     client_choice = int(input())
     if client_choice == 4:
-        handle_attack(client_executor)
+        handle_attack()
     elif client_choice == 1:
-        handle_country_request(client_executor)
+        handle_country_request()
     elif client_choice == 2:
-        handle_all_ips_request(client_executor)
+        handle_all_ips_request()
     elif client_choice == 3:
-        handle_top_countries_request(client_executor)
+        handle_top_countries_request()
     else:
         print("Invalid choice. Only options 1-4 are allowed.")
 

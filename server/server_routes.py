@@ -9,7 +9,7 @@ from server.server_requests.country_request import CountryRequest
 logger = logging.getLogger(__name__)
 server_router = APIRouter()
 
-server_controller = ServerController()
+server_controller = ServerController.get_instance()
 
 @server_router.post("/get_country")
 async def get_ip_country(request: CountryRequest) -> str:
