@@ -67,8 +67,16 @@ class ClientController:
         except Exception as e:
             return Response(error_msg=f"Could not perform url brute force attack. The error is: {e}", status_code=500)
 
-    def perform_third_attack(self, target_address: str, target_port: int):
-        pass
+    def perform_icmp_smurf_attack(self, target_address: str, number_of_packets: int):
+        if not self.__valid_number_of_packets(number_of_packets):
+            return Response(
+                error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
+
+        try:
+            self.__client.perform_icmp_smurf_attack(target_address, number_of_packets)
+            return DataResponse(True)
+        except Exception as e:
+            return Response(error_msg=f"Could not perform icmp smurf attack. The error is: {e}", status_code=500)
 
     def __valid_number_of_packets(self, number_of_packets: int) -> bool:
         if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:

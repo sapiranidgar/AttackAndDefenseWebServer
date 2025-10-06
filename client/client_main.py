@@ -4,6 +4,7 @@ from web_attacks.attack_type import AttackType, SynFloodAttackType
 DEFAULT_TARGET_PORT = 8000
 client_controller = ClientController()
 
+
 def print_options_to_client():
     print("Hello to GEO-Location Client!")
     print("Choose between one of the following options:")
@@ -17,12 +18,14 @@ def print_attack_choices_to_client():
     print("choose one of the following attacks:")
     print("1. Syn-Flood attack.")
     print("2. Url-Bruteforce attack")
-    print("3. Other attack")
+    print("3. ICMP Smurf attack")
+
 
 def print_syn_flood_attack_menu():
     print("choose one of the following attacks:")
     print("1. Syn-Flood Direct attack.")
     print("2. Syn-Flood Spoofed attack")
+
 
 def handle_syn_flood_attack(target_address: str, target_port: int, number_of_packets: int):
     print_syn_flood_attack_menu()
@@ -35,6 +38,7 @@ def handle_syn_flood_attack(target_address: str, target_port: int, number_of_pac
     else:
         print(res.get_error_msg())
 
+
 def handle_url_brute_force_attack(target_address: str, target_port: int, number_of_packets: int):
     print("~~~ Starting URL Brute Force Attack ~~~")
     res = client_controller.perform_url_brute_force_attack(target_address, target_port, number_of_packets)
@@ -43,14 +47,15 @@ def handle_url_brute_force_attack(target_address: str, target_port: int, number_
     else:
         print(res.get_error_msg())
 
-def handle_third_attack(target_address: str, number_of_packets: int):
-    # todo: change
-    print("~~~ Starting URL Brute Force Attack ~~~")
-    res = client_controller.perform_third_attack(target_address, number_of_packets)
+
+def handle_icmp_smurf_attack(target_address: str, number_of_packets: int):
+    print("~~~ Starting ICMP-Smurf Attack ~~~")
+    res = client_controller.perform_icmp_smurf_attack(target_address, number_of_packets)
     if res.is_successful() and res.get_data():
-        print("~~~ Finished SYN-FLOOD Attack ~~~")
+        print("~~~ Finished ICMP-Smurf Attack ~~~")
     else:
         print(res.get_error_msg())
+
 
 def handle_attack():
     print("Welcome to the Attacks menu!")
@@ -65,8 +70,8 @@ def handle_attack():
     elif client_choice == AttackType.URL_BRUTE_FORCE:
         handle_url_brute_force_attack(target_address, target_port, number_of_packets)
 
-    elif client_choice == AttackType.THIRD_ATTACK:
-        handle_third_attack(target_address, target_port)
+    elif client_choice == AttackType.ICMP_SMURF:
+        handle_icmp_smurf_attack(target_address, number_of_packets)
 
     else:
         print("Invalid attack choice. Only 1-3 are allowed.")
