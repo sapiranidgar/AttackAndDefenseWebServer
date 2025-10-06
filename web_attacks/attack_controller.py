@@ -1,3 +1,5 @@
+import threading
+
 from web_attacks.attack_parameters import AttackParameters
 from web_attacks.attack_type import AttackType
 from web_attacks.attacks.icmp_smurf_attack import ICMPSmurfAttack
@@ -12,6 +14,20 @@ class AttackController:
         AttackType.SYN_FLOOD_DIRECT: SynFloodDirectAttack(),
         AttackType.SYN_FLOOD_SPOOFED: SynFloodSpoofedAttack()
     }
+    __instance = None
+    __lock = threading.Lock()
+
+    def __init__(self):
+        raise RuntimeError("This is a Singleton. Invoke get_instance() instead.")
+
+    @classmethod
+    def get_instance(cls):
+        if cls.__instance is None:
+            with cls.__lock:
+                if cls.__instance is None:
+                    cls.__instance = super().__new__(cls)
+
+        return cls.__instance
 
     def perform_attack(self, attack_parameters: AttackParameters, attack_type: AttackType):
         if attack_type in self.__attacks:

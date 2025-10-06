@@ -14,7 +14,8 @@ GET_TOP_COUNTRIES_URL = "/get_top_countries"
 
 
 class Client:
-    __attack_controller = AttackController()
+    def __init__(self):
+        self.__attack_controller = AttackController.get_instance()
 
     def __send_post_request(self, url: str, request: ServerRequest) -> str:
         data = request.model_dump_json()
