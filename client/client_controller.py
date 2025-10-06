@@ -80,6 +80,14 @@ class ClientController:
         except Exception as e:
             return Response(error_msg=f"Could not perform icmp smurf attack. The error is: {e}", status_code=500)
 
+    def get_attack_details(self, attack_type: AttackType) -> Response[str]:
+        try:
+            details = self.__client.get_attack_details(attack_type)
+            return DataResponse(details)
+        except Exception as e:
+            return Response(error_msg=f"Could not get details about the attack. The error is: {e}", status_code=500)
+
+
     def __valid_number_of_packets(self, number_of_packets: int) -> bool:
         if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:
             return False

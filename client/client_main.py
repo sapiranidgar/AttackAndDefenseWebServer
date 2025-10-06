@@ -57,7 +57,15 @@ def handle_attack():
     number_of_packets = int(input("Enter number of packets to send to target: "))
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
-    if client_choice == AttackType.SYN_FLOOD_DIRECT or AttackType.SYN_FLOOD_SPOOFED:
+
+    attack_details_res = client_controller.get_attack_details(client_choice)
+    if attack_details_res.is_successful():
+        print(attack_details_res.get_data())
+    else:
+        print(attack_details_res.get_error_msg())
+        return
+
+    if client_choice == AttackType.SYN_FLOOD_DIRECT or client_choice == AttackType.SYN_FLOOD_SPOOFED:
         handle_syn_flood_attack(target_address, target_port, number_of_packets, client_choice)
 
     elif client_choice == AttackType.URL_BRUTE_FORCE:
