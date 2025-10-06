@@ -1,5 +1,5 @@
 from client.client_controller import ClientController
-from web_attacks.attack_type import AttackType, SynFloodAttackType
+from web_attacks.attack_type import AttackType
 
 DEFAULT_TARGET_PORT = 8000
 client_controller = ClientController()
@@ -16,22 +16,15 @@ def print_options_to_client():
 
 def print_attack_choices_to_client():
     print("choose one of the following attacks:")
-    print("1. Syn-Flood attack.")
-    print("2. Url-Bruteforce attack")
-    print("3. ICMP Smurf attack")
-
-
-def print_syn_flood_attack_menu():
-    print("choose one of the following attacks:")
     print("1. Syn-Flood Direct attack.")
-    print("2. Syn-Flood Spoofed attack")
+    print("2. Syn-Flood Spoofed attack.")
+    print("3. Url-Bruteforce attack")
+    print("4. ICMP Smurf attack")
 
 
-def handle_syn_flood_attack(target_address: str, target_port: int, number_of_packets: int):
-    print_syn_flood_attack_menu()
-    syn_flood_attack_type = SynFloodAttackType(int(input()))
+def handle_syn_flood_attack(target_address: str, target_port: int, number_of_packets: int, attack_type: AttackType):
     print("~~~ Starting SYN-FLOOD Attack ~~~")
-    res = client_controller.perform_syn_flood_attack(target_address, target_port, syn_flood_attack_type,
+    res = client_controller.perform_syn_flood_attack(target_address, target_port, attack_type,
                                                      number_of_packets)
     if res.is_successful() and res.get_data():
         print("~~~ Finished SYN-FLOOD Attack ~~~")
@@ -64,8 +57,16 @@ def handle_attack():
     number_of_packets = int(input("Enter number of packets to send to target: "))
     print_attack_choices_to_client()
     client_choice = AttackType(int(input()))
-    if client_choice == AttackType.SYN_FLOOD:
-        handle_syn_flood_attack(target_address, target_port, number_of_packets)
+
+    attack_details_res = client_controller.get_attack_details(client_choice)
+    if attack_details_res.is_successful():
+        print(attack_details_res.get_data())
+    else:
+        print(attack_details_res.get_error_msg())
+        return
+
+    if client_choice == AttackType.SYN_FLOOD_DIRECT or client_choice == AttackType.SYN_FLOOD_SPOOFED:
+        handle_syn_flood_attack(target_address, target_port, number_of_packets, client_choice)
 
     elif client_choice == AttackType.URL_BRUTE_FORCE:
         handle_url_brute_force_attack(target_address, target_port, number_of_packets)
