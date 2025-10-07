@@ -1,7 +1,9 @@
 from typing import Optional
-
+import validators
 import requests
+from validators import ValidationError
 
+from common_utils import is_valid_ip_address
 from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
 from server.server_requests.country_request import CountryRequest
 from server.server_requests.server_request import ServerRequest
@@ -30,6 +32,17 @@ class Client:
         response = requests.get(url)
         return response.content.decode("utf-8")
 
+    def __valid_url_address(self, url_address: str) -> bool:
+        try:
+            return validators.url(url_address)
+        except ValidationError:
+            return False
+
+    def __valid_address(self, address: str) -> bool:
+        if is_valid_ip_address(address) or self.__valid_url_address(address):
+            return True
+        return False
+
     def __valid_number_of_packets(self, number_of_packets: int) -> bool:
         if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:
             return False
@@ -40,6 +53,9 @@ class Client:
         if not self.__valid_number_of_packets(num_of_requests):
             raise ValueError(
                 f"Number of packets for performing the attack is invalid. Try again with {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets or more.")
+
+        if not self.__valid_address(target_ip):
+            raise ValueError("Target IP address is in invalid format.")
 
         attack_parameters = AttackParameters(target_ip=target_ip, target_port=target_port,
                                              num_of_requests=num_of_requests)
