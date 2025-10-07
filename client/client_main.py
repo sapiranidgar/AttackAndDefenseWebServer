@@ -2,16 +2,17 @@ from client.client_controller import ClientController
 from web_attacks.attack_type import AttackType
 
 DEFAULT_TARGET_PORT = 8000
+GOODBYE_CHOICE = 5
 client_controller = ClientController()
 
 
 def print_options_to_client():
-    print("Hello to GEO-Location Client!")
-    print("Choose between one of the following options:")
+    print("\n\nChoose between one of the following options:")
     print("1. GEO-Location - get the country of a given ip address.")
     print("2. Get all ip addresses that made GEO-Location request to a given country.")
     print("3. Get top 5 countries with most GEO-Location requests.")
     print("4. Generate an attack.")
+    print("5. Exit the program.")
 
 
 def print_attack_choices_to_client():
@@ -107,18 +108,23 @@ def handle_top_countries_request():
 
 
 def main():
-    print_options_to_client()
-    client_choice = int(input())
-    if client_choice == 4:
-        handle_attack()
-    elif client_choice == 1:
-        handle_country_request()
-    elif client_choice == 2:
-        handle_all_ips_request()
-    elif client_choice == 3:
-        handle_top_countries_request()
-    else:
-        print("Invalid choice. Only options 1-4 are allowed.")
+    print("Hello to GEO-Location Client!")
+    client_choice = 0
+    while client_choice != GOODBYE_CHOICE:
+        print_options_to_client()
+        client_choice = int(input())
+        if client_choice == 4:
+            handle_attack()
+        elif client_choice == 1:
+            handle_country_request()
+        elif client_choice == 2:
+            handle_all_ips_request()
+        elif client_choice == 3:
+            handle_top_countries_request()
+        elif client_choice == 5:
+            print("Exiting the program, Goodbye!")
+        else:
+            print("Invalid choice. Only options 1-5 are allowed.")
 
 
 if __name__ == "__main__":

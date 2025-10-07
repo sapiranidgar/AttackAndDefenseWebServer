@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional
 
 from common_objects.responses import Response, DataResponse
+from common_utils import is_valid_ip_address
 from server.server_executor import Server
 from server.server_requests.all_ips_in_country_request import AllIPsInCountryRequest
 from server.server_requests.country_request import CountryRequest
@@ -50,16 +51,7 @@ class ServerController:
 
     @classmethod
     def __valid_ip_address(cls, ip_address: str) -> bool:
-        ip_parts = ip_address.split('.')
-        if len(ip_parts) != 4:
-            return False
-        for ip_part in ip_parts:
-            if not ip_part.isdigit():
-                return False
-            i = int(ip_part)
-            if i < 0 or i > 255:
-                return False
-        return True
+        return is_valid_ip_address(ip_address)
 
     def get_all_ips(self, request: AllIPsInCountryRequest) -> Response[list[str]]:
         country = request.country

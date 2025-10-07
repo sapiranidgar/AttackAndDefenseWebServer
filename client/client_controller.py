@@ -36,32 +36,20 @@ class ClientController:
 
     def perform_syn_flood_attack(self, target_address: str, target_port: int, attack_type: AttackType,
                                  number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
-        if not self.__valid_number_of_packets(number_of_packets):
-            return Response(
-                error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
-        if attack_type == AttackType.SYN_FLOOD_DIRECT:
-            try:
+        try:
+            if attack_type == AttackType.SYN_FLOOD_DIRECT:
                 self.__client.perform_syn_flood_direct_attack(target_address, target_port, number_of_packets)
-                return DataResponse(True)
-            except Exception as e:
-                return Response(error_msg=f"Could not perform syn-flood direct attack. The error is: {e}",
-                                status_code=500)
-        elif attack_type == AttackType.SYN_FLOOD_SPOOFED:
-            try:
+            elif attack_type == AttackType.SYN_FLOOD_SPOOFED:
                 self.__client.perform_syn_flood_spoofed_attack(target_address, target_port, number_of_packets)
-                return DataResponse(True)
-            except Exception as e:
-                return Response(error_msg=f"Could not perform syn-flood spoofed attack. The error is: {e}",
-                                status_code=500)
-        else:
-            return Response(error_msg="You chose unsupported syn-flood attack. Try again.", status_code=500)
+            else:
+                return Response(error_msg="You chose unsupported syn-flood attack. Try again.", status_code=500)
+            return DataResponse(True)
+        except Exception as e:
+            return Response(error_msg=f"Could not perform syn-flood spoofed attack. The error is: {e}",
+                            status_code=500)
 
     def perform_url_brute_force_attack(self, target_address: str, target_port: int,
                                        number_of_packets: int = NUMBER_OF_PACKETS) -> Response[bool]:
-        if not self.__valid_number_of_packets(number_of_packets):
-            return Response(
-                error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
-
         try:
             target_url = f"http://{target_address}:{target_port}"
             self.__client.perform_url_brute_force_attack(target_url, number_of_packets)
@@ -70,10 +58,6 @@ class ClientController:
             return Response(error_msg=f"Could not perform url brute force attack. The error is: {e}", status_code=500)
 
     def perform_icmp_smurf_attack(self, target_address: str, number_of_packets: int):
-        if not self.__valid_number_of_packets(number_of_packets):
-            return Response(
-                error_msg=f"Number of packets to perform the attack is too small. Try again with at least {MIN_NUMBER_OF_PACKETS_FOR_ATTACK} packets.")
-
         try:
             self.__client.perform_icmp_smurf_attack(target_address, number_of_packets)
             return DataResponse(True)
@@ -86,9 +70,3 @@ class ClientController:
             return DataResponse(details)
         except Exception as e:
             return Response(error_msg=f"Could not get details about the attack. The error is: {e}", status_code=500)
-
-
-    def __valid_number_of_packets(self, number_of_packets: int) -> bool:
-        if number_of_packets < MIN_NUMBER_OF_PACKETS_FOR_ATTACK:
-            return False
-        return True
