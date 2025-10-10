@@ -16,12 +16,12 @@ Small http server with an API that supports the following endpoints:
 
 ### 2. Attack Service
 Simple and understandable CLI that attacks the web server from part 1.
-The CLI support:
--	Syn-flood
+The CLI supports the following attacks:
+-	Syn-flood (Direct and Spoofed)
 -	URL brute-force
--	An additional attack of your choice (should add).
+-	ICMP Smurf
 
-The attacking process is capable of sending 500 requests per second.
+The attacking process is capable of sending any number of requests.
 
 ### 3. Proxy Defense
 Reverse proxy between the attacking service and the webserver.
@@ -42,15 +42,20 @@ python proxy.py
 ```
 The proxy will forward requests to the web server and is available at http://localhost:8081.
 
-3. Run the client_main.py file to send requests to the server.
+3. Run the client_main.py file to send requests to the server:
+```python
+python client/client_main.py
+```
+
 The available options are:
 - GEO-Location request.
 - Get all Ips in a given country.
 - Get top 5 countries.
 - Attack the server.
+- Exit the program.
 
 In each choice, you will be prompted with relevant inputs necessary to complete the task.
-If you choose "Attack the Server" option - choose one of the availale attacks (1-3).
+If you choose "Attack the Server" option - choose one of the available attacks (1-4).
 You'll need to enter target IP address and port in order to perform the attack.
 
 To attack the server directly, enter the address 127.0.0.1 and port 8000 (while executing the server locally).
