@@ -1,58 +1,57 @@
-from scapy.all import *
-from collections import Counter
 import threading
 import time
 
-from scapy.layers.inet import IP, TCP
+from scapy.config import conf
+from scapy.sendrecv import sniff
 
-from proxy_controller import ProxyController
+from proxy.attack_detections.syn_flood_attack_detector import SynFloodAttackDetector
+from proxy.proxy_controller import ProxyController
 
 SLEEP_TIME_BETWEEN_REQUESTS = 5
-SYN_COUNT_FOR_SYN_FLOOD_DETECTION = 10
-
-syn_count = Counter()
-ack_count = Counter()
 
 
-def analyze_syn_ack(pkt):
-    """Analyze TCP packets for SYN flood patterns."""
+class AttackMonitor:
+    def __init__(self):
+        self.__attacks_detectors = [SynFloodAttackDetector()]
+        self.__proxy_controller = ProxyController()
 
-    if IP in pkt and TCP in pkt:
-        src = pkt[IP].src
+    def detect_attacks(self):
+        while True:
+            print("IN WHILE MAIN")
+            time.sleep(SLEEP_TIME_BETWEEN_REQUESTS)
+            for attack_detector in self.__attacks_detectors:
+                print("STARTS ATTACKER")
+                self.__block_attackers(attack_detector.get_ips_to_block())
 
-        if pkt[TCP].flags.S:
-            syn_count[src] += 1
-        elif pkt[TCP].flags.A:
-            ack_count[src] += 1
-
-
-def detect_attacks():
-    """Periodically check packet counts for DoS patterns."""
-    controller = ProxyController.get_instance()
-
-    while True:
-        time.sleep(SLEEP_TIME_BETWEEN_REQUESTS)
-        if not syn_count:
-            continue
-
-        for src, syns in syn_count.items():
-            acks = ack_count.get(src, 0)
-            if syns > 3 * acks and syns > SYN_COUNT_FOR_SYN_FLOOD_DETECTION:
-                controller.block_ip(src, reason="SYN Flood detected")
-        syn_count.clear()
-        ack_count.clear()
+            self.__reset_attacks_detectors()
 
 
-def start_attack_monitor():
-    """Start Scapy sniffer and detection thread."""
-    print("[MONITOR] Attack detection started...")
-    threading.Thread(target=detect_attacks, daemon=True).start()
+    def __block_attackers(self, ips_and_reasons: list[tuple[str, str]]):
+        for ip, reason in ips_and_reasons:
+            print("blocked IP: {}, REASON: {}".format(ip, reason))
+            self.__proxy_controller.block_ip(ip, reason)
 
-    try:
-        sniff(
-            iface=["\\Device\\NPF_Loopback", conf.iface],
-            prn=analyze_syn_ack,
-            store=False
-        )
-    except Exception as e:
-        print(f"[MONITOR] Error: {e}")
+    def analyze_packet(self, packet):
+        print("ANALYZING PACKET")
+        for attack_detector in self.__attacks_detectors:
+            print("STARTS ATTACKER in analyze")
+            attack_detector.analyze_single_packet(packet)
+
+
+    def start_attack_monitor(self):
+        """Start Scapy sniffer and detection thread."""
+        print("[MONITOR] Attack detection started...")
+        threading.Thread(target=self.detect_attacks, daemon=True).start()
+
+        try:
+            sniff(
+                iface=["\\Device\\NPF_Loopback", conf.iface],
+                prn=self.analyze_packet,
+                store=False
+            )
+        except Exception as e:
+            print(f"[MONITOR] Error: {e}")
+
+    def __reset_attacks_detectors(self):
+        for attack_detector in self.__attacks_detectors:
+            attack_detector.reset_detector()

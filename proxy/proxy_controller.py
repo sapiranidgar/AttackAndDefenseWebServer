@@ -11,12 +11,12 @@ class ProxyController:
     Extend this class to add more detection logic.
     """
 
-    __rate_history = None
-    __path_history = None
+    __rate_history = {}
+    __path_history = {}
     __request_limit = None
     __path_limit = None
     __time_window = None
-    __blocked_ips = None
+    __blocked_ips = set()
 
     __instance = None
     __lock = threading.Lock()
@@ -28,12 +28,9 @@ class ProxyController:
             with cls.__lock:
                 if cls.__instance is None:
                     cls.__instance = super().__new__(cls)
-                    cls.__instance.__request_limit = request_limit
-                    cls.__instance.__path_limit = path_limit
-                    cls.__instance.__time_window = time_window
-                    cls.__instance.__blocked_ips = set()
-                    cls.__instance.__rate_history = {}
-                    cls.__instance.__path_history = {}
+                    cls.__request_limit = request_limit
+                    cls.__path_limit = path_limit
+                    cls.__time_window = time_window
         return cls.__instance
 
     def __is_regular_dos_attack(self, ip: str, current_timestamp: float) -> bool:

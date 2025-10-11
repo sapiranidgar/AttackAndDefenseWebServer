@@ -3,7 +3,7 @@ import threading
 from fastapi import FastAPI
 import uvicorn
 
-from proxy.attack_monitor import start_attack_monitor
+from proxy.attack_monitor import AttackMonitor
 from proxy.proxy_routes import proxy_router
 
 
@@ -14,7 +14,8 @@ def create_app() -> FastAPI:
 
 
 if __name__ == "__main__":
-    monitor_thread = threading.Thread(target=start_attack_monitor, daemon=True)
+    attack_monitor = AttackMonitor()
+    monitor_thread = threading.Thread(target=attack_monitor.start_attack_monitor, daemon=True)
     monitor_thread.start()
 
     app = create_app()  # only created when you run main.py
