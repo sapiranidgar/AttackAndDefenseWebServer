@@ -2,14 +2,32 @@ import logging
 import httpx
 from fastapi import APIRouter, Request, Response
 
+from proxy.proxy_controller import ProxyController
+
 logger = logging.getLogger(__name__)
-proxy_router = APIRouter()
+
+DEFAULT_REQUEST_LIMIT = 5
+DEFAULT_PATHS_LIMIT = 5
+DEFAULT_TIME_WINDOW = 10
 TARGET_URL = "http://127.0.0.1:8000"  # Local web server to forward requests to
 AVAILABLE_REQUEST_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+
+proxy_router = APIRouter()
+proxy_controller = ProxyController.get_instance(request_limit=DEFAULT_REQUEST_LIMIT, path_limit=DEFAULT_PATHS_LIMIT, time_window=DEFAULT_TIME_WINDOW)
+
 
 
 @proxy_router.api_route("/{path:path}", methods=AVAILABLE_REQUEST_METHODS)
 async def proxy(request: Request, path: str):
+    client_ip = request.client.host
+
+    # --- Security check ---
+    if not proxy_controller.is_allowed(client_ip, path):
+        return Response(
+            content="Request blocked by proxy: suspected attack.",
+            status_code=403
+        )
+
     async with httpx.AsyncClient(follow_redirects=True) as client:
         # Prepare the request to forward
         url = f"{TARGET_URL}/{path}"
