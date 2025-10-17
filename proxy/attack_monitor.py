@@ -44,8 +44,22 @@ class AttackMonitor:
             self.__proxy_controller.block_ip(ip, reason)
 
     def analyze_packet(self, packet):
-        for attack_detector in self.__attacks_detectors:
-            attack_detector.analyze_single_packet(packet)
+        try:
+            # quick summary for debugging
+            pkt_summary = packet.summary() if hasattr(packet, "summary") else str(type(packet))
+            logger.debug(f"[AttackMonitor] analyze_packet called. summary={pkt_summary}")
+
+            # show which detectors we have
+            for detector in self.__attacks_detectors:
+                det_name = detector.__class__.__name__
+                try:
+                    logger.debug(f"[AttackMonitor] calling detector: {det_name}")
+                    detector.analyze_single_packet(packet)
+                except Exception as e:
+                    # catch detector exceptions so we can see them in logs
+                    logger.exception(f"[AttackMonitor] Exception from {det_name}: {e}")
+        except Exception as e:
+            logger.exception(f"[AttackMonitor] analyze_packet top-level exception: {e}")
 
     def start_attack_monitor(self):
         """Start Scapy sniffer and detection thread."""

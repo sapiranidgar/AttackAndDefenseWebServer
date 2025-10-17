@@ -4,8 +4,8 @@ from scapy.layers.inet import IP, TCP
 from proxy.attack_detections.attack_detector import AttackDetector
 import threading
 
-DOS_TIME_WINDOW = 30
-DOS_REQUEST_LIMIT = 10
+DOS_TIME_WINDOW = 300
+DOS_REQUEST_LIMIT = 1000
 
 
 class RegularDosAttackDetector(AttackDetector):

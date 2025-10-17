@@ -13,7 +13,7 @@ TARGET_URL = "http://127.0.0.1:8000"  # Local web server to forward requests to
 AVAILABLE_REQUEST_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
 
 proxy_router = APIRouter()
-proxy_controller = ProxyController.get_instance(request_limit=DEFAULT_REQUEST_LIMIT, path_limit=DEFAULT_PATHS_LIMIT, time_window=DEFAULT_TIME_WINDOW)
+proxy_controller = ProxyController.get_instance()
 
 
 

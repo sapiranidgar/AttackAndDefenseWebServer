@@ -5,7 +5,7 @@ from proxy.attack_detections.attack_detector import AttackDetector
 import threading
 
 ICMP_COUNT_LIMIT = 50
-ICMP_TIME_WINDOW = 5
+ICMP_TIME_WINDOW = 20
 ECHO_TYPE_REQUEST = 8
 
 class ICMPSmurfAttackDetector(AttackDetector):
@@ -23,7 +23,7 @@ class ICMPSmurfAttackDetector(AttackDetector):
                 src = pkt[IP].src
                 now = time.time()
                 with self.__lock:
-                    self.__icmp_counts[src].append(now)
+                    self.__icmp_counts.setdefault(src, []).append(now)
                     self.__icmp_counts[src] = [t for t in self.__icmp_counts[src] if
                                                 now - t < self.__time_window]
 
