@@ -41,14 +41,14 @@ class UrlBruteForceAttackDetector(AttackDetector):
         now = time.time()
         ips_to_block = []
         with self.__lock:
-            for src, entries in list(self.__path_history.items()):
-                entries = [(p, t) for (p, t) in entries if now - t < self.__time_window]
-                self.__path_history[src] = entries
-                unique_paths = len(set(p for p, _ in entries))
+            for src, history in list(self.__path_history.items()):
+                history = [(p, t) for (p, t) in history if now - t < self.__time_window]
+                self.__path_history[src] = history
+                unique_paths = len(set(p for p, _ in history))
                 if unique_paths > self.__unique_paths_limit:
                     ips_to_block.append((src, f"URL brute-force detected: {unique_paths} unique paths in {self.__time_window}s"))
         return ips_to_block
 
     def reset_detector(self):
         with self.__lock:
-            self.__path_history.clear()
+            self.__path_history = {}
