@@ -12,6 +12,8 @@ GEOLOCATION_URL_PREFIX = "https://ipinfo.io/"
 GEOLOCATION_URL_SUFFIX = "/json"
 
 COUNTRY_KEY = "country"
+BOGON_KEY = "bogon"
+BOGON_IP_MESSAGE = "Bogon IP. No country available."
 
 
 class Server:
@@ -22,9 +24,16 @@ class Server:
         url = GEOLOCATION_URL_PREFIX + ip_address + GEOLOCATION_URL_SUFFIX
 
         try:
-            ip_country = json.load(urlopen(url))[COUNTRY_KEY]
-        except:
-            logger.error("Could not load country for ip address: " + ip_address)
+            ip_country_response = json.load(urlopen(url))
+            if COUNTRY_KEY in ip_country_response:
+                ip_country = ip_country_response[COUNTRY_KEY]
+            elif BOGON_KEY in ip_country_response and ip_country_response[BOGON_KEY]:
+                return BOGON_IP_MESSAGE
+            else:
+                logger.error(f"Received wrong country response for ip address: {ip_address}.")
+                return ""
+        except Exception as e:
+            logger.error(f"Could not load country for ip address: {ip_address}. The error is: {e}")
             return ""
 
         self.__server_db.insert_record(ip_country, ip_address, start_date)
