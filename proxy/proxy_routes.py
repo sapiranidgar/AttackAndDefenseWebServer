@@ -23,6 +23,7 @@ async def proxy(request: Request, path: str):
 
     # if there is an attack with this ip
     if not proxy_controller.is_allowed(client_ip, path):
+        logger.warning("Detected an attack by ip: {client_ip} and path: {path}".format(client_ip=client_ip, path=path))
         return Response(
             content="Request blocked by proxy: suspected attack.",
             status_code=403
@@ -42,7 +43,7 @@ async def proxy(request: Request, path: str):
             headers=headers,
             content=body
         )
-
+        logger.info("Forwarded message to server successfully.")
         # Return the target server's response
         return Response(
             content=response.content,
