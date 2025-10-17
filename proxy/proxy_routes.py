@@ -21,13 +21,14 @@ proxy_controller = ProxyController.get_instance(request_limit=DEFAULT_REQUEST_LI
 async def proxy(request: Request, path: str):
     client_ip = request.client.host
 
-    # --- Security check ---
+    # if there is an attack with this ip
     if not proxy_controller.is_allowed(client_ip, path):
         return Response(
             content="Request blocked by proxy: suspected attack.",
             status_code=403
         )
 
+    # if not, forward request to the web server
     async with httpx.AsyncClient(follow_redirects=True) as client:
         # Prepare the request to forward
         url = f"{TARGET_URL}/{path}"

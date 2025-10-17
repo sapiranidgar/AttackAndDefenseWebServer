@@ -17,10 +17,8 @@ class AttackMonitor:
 
     def detect_attacks(self):
         while True:
-            print("IN WHILE MAIN")
             time.sleep(SLEEP_TIME_BETWEEN_REQUESTS)
             for attack_detector in self.__attacks_detectors:
-                print("STARTS ATTACKER")
                 self.__block_attackers(attack_detector.get_ips_to_block())
 
             self.__reset_attacks_detectors()
@@ -32,9 +30,7 @@ class AttackMonitor:
             self.__proxy_controller.block_ip(ip, reason)
 
     def analyze_packet(self, packet):
-        print("ANALYZING PACKET")
         for attack_detector in self.__attacks_detectors:
-            print("STARTS ATTACKER in analyze")
             attack_detector.analyze_single_packet(packet)
 
 
