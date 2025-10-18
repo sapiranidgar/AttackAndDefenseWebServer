@@ -90,8 +90,17 @@ def handle_country_request():
 
 def handle_all_ips_request():
     country = input("Enter country code to receive its addresses: ")
-    # todo: add date filtering
-    client_res = client_controller.send_get_all_addresses_in_country_request(country)
+    should_filter = input("Do you wanna filter the IPs list by start and end dates? (Y/N): ")
+
+    start_date = None
+    end_date = None
+    if should_filter.lower() == "y":
+        start_date = int(input("Enter start date: "))
+        end_date = int(input("Enter end date: "))
+    elif should_filter.lower() != "n":
+        print("Invalid input. Only 'y' or 'n' are accepted. Not filtering by dates.")
+
+    client_res = client_controller.send_get_all_addresses_in_country_request(country, start_date, end_date)
     if client_res.is_successful():
         print(client_res.get_data())
     else:
