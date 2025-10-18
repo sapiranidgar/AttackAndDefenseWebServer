@@ -1,7 +1,12 @@
+from datetime import datetime, timezone
+
 from client.client_controller import ClientController
 from web_attacks.attack_type import AttackType
 
 DEFAULT_TARGET_PORT = 8000
+DATE_FORMAT = "%d/%m/%Y"
+DATE_FILTERING_YES_OPTION = "y"
+DATE_FILTERING_NO_OPTION = "n"
 GOODBYE_CHOICE = 5
 client_controller = ClientController()
 
@@ -90,8 +95,20 @@ def handle_country_request():
 
 def handle_all_ips_request():
     country = input("Enter country code to receive its addresses: ")
-    # todo: add date filtering
-    client_res = client_controller.send_get_all_addresses_in_country_request(country)
+    should_filter = input("Do you wanna filter the IPs list by start and end dates? (Y/N): ")
+
+    start_date = None
+    end_date = None
+    if should_filter.lower() == DATE_FILTERING_YES_OPTION:
+        start_date_str = input("Enter start date (DD/MM/YYYY): ")
+        start_date = datetime.strptime(start_date_str, DATE_FORMAT).replace(tzinfo=timezone.utc)
+        end_date_str = input("Enter end date (DD/MM/YYYY): ")
+        end_date = datetime.strptime(end_date_str, DATE_FORMAT).replace(tzinfo=timezone.utc)
+
+    elif should_filter.lower() != DATE_FILTERING_NO_OPTION:
+        print("Invalid input. Only 'y' or 'n' are accepted. Not filtering by dates.")
+
+    client_res = client_controller.send_get_all_addresses_in_country_request(country, start_date, end_date)
     if client_res.is_successful():
         print(client_res.get_data())
     else:

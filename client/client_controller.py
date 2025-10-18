@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from client.client_executor import Client
 from common_objects.responses import Response, DataResponse
 from web_attacks.attack_type import AttackType
@@ -18,9 +21,9 @@ class ClientController:
             return Response(error_msg=f"Could not receive the country for ip {ip_address}. The error is: {e}",
                             status_code=500)
 
-    def send_get_all_addresses_in_country_request(self, country: str) -> Response[str]:
+    def send_get_all_addresses_in_country_request(self, country: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> Response[str]:
         try:
-            server_answer = self.__client.send_get_all_addresses_in_country_request(country)
+            server_answer = self.__client.send_get_all_addresses_in_country_request(country, start_date, end_date)
             return DataResponse(server_answer)
         except Exception as e:
             return Response(error_msg=f"Could not receive the addresses of country {country}. The error is: {e}",

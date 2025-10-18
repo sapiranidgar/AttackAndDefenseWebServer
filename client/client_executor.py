@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 import validators
 import requests
@@ -66,8 +67,8 @@ class Client:
         url = SERVER_URL + GET_COUNTRY_OF_ADDRESS_URL
         return self.__send_post_request(url, request)
 
-    def send_get_all_addresses_in_country_request(self, country: str) -> str:
-        request = AllIPsInCountryRequest(country=country)
+    def send_get_all_addresses_in_country_request(self, country: str, start_date: Optional[datetime], end_date: Optional[datetime]) -> str:
+        request = AllIPsInCountryRequest(country=country, start_date=start_date, end_date=end_date)
         url = SERVER_URL + GET_ALL_IPS_URL
         return self.__send_post_request(url, request)
 
